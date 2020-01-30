@@ -6,6 +6,7 @@ using System.Threading;
 
 namespace CachedField
 {
+    
     public class CachedField<T>
     {
         public static readonly TimeSpan DefaultUpdateSpan = new TimeSpan(0, 5, 0);
@@ -17,6 +18,7 @@ namespace CachedField
 
         private readonly TimeSpan updateSpan;
 
+        public event EventHandler<CachedFieldInvalidatedEventArgs> OnInvalidated;
 
         private bool InvalidateRequired()
         {
@@ -77,6 +79,8 @@ namespace CachedField
             value = getValueDelegate();
             lastUpdate = DateTime.Now;
             rwLock.ExitWriteLock();
+
+            OnInvalidated?.Invoke(this, new CachedFieldInvalidatedEventArgs(lastUpdate));
         }
     }
 }

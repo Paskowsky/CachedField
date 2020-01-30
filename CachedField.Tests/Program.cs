@@ -13,7 +13,7 @@ namespace CachedField.Tests
         static void Main(string[] args)
         {
             x = new CachedField<string>(() => { Thread.Sleep(5000); return DateTime.Now.ToString(); }, new TimeSpan(0, 0, 30));
-
+            x.OnInvalidated += X_OnInvalidated;
             new Thread(() => { while (true) { Thread.Sleep(10000); x.Invalidate(); } }).Start();
             new Thread(() => { while (true) { Thread.Sleep(20000); x.Invalidate(); } }).Start();
 
@@ -26,6 +26,9 @@ namespace CachedField.Tests
             }
         }
 
-
+        private static void X_OnInvalidated(object sender, CachedFieldInvalidatedEventArgs e)
+        {
+            Console.WriteLine("Invalid" + e.LastUpdate.ToString());
+        }
     }
 }
